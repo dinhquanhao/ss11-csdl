@@ -1,0 +1,17 @@
+Nhận xét về sự "đánh đổi" (Trade-off) tài nguyên:
+
+Về tốc độ đọc (SELECT):
+
+Trước Index: Hệ thống phải thực hiện Full Table Scan (quét qua toàn bộ 500.000 dòng) để tìm ra số điện thoại khớp, gây tốn rất nhiều thời gian (O(n)).
+
+Sau Index: Hệ thống sử dụng cấu trúc cây (B-Tree) để tìm kiếm trực tiếp. Tốc độ tra cứu thông tin bệnh nhân giảm xuống chỉ còn tính bằng mili-giây (O(log n)), giải quyết triệt để tình trạng ùn tắc ở quầy tiếp tân.
+
+Về tốc độ ghi (INSERT):
+
+Trước Index: Quá trình thêm bệnh nhân mới diễn ra rất nhanh vì dữ liệu chỉ việc nối thêm (append) vào cuối bảng.
+
+Sau Index: Tốc độ Insert 1.000 dòng bị chậm lại một chút. Nguyên nhân là do mỗi lần có dữ liệu mới được thêm vào bảng, hệ thống không chỉ ghi dữ liệu mà còn phải tính toán và sắp xếp lại cấu trúc cây Index của cột Phone.
+
+Kết luận & Khuyến nghị:
+
+Sự đánh đổi này là hoàn toàn xứng đáng và bắt buộc phải làm. Đối với bảng dữ liệu bệnh nhân, thao tác tra cứu (SELECT) diễn ra với tần suất khổng lồ mỗi ngày, trong khi thao tác tiếp nhận bệnh nhân mới (INSERT) ít hơn rất nhiều. Việc hy sinh một chút thời gian (vài mili-giây) khi lưu hồ sơ mới để đổi lấy tốc độ truy xuất tức thì cho hàng ngàn lượt khám cũ là phương án tối ưu nhất.
